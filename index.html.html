@@ -1,0 +1,652 @@
+  <!DOCTYPE html> 
+  <html lang="en">
+  <head>
+    <!-- ─── HEADER ─── -->
+ 
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Syntra Studio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="Syntra-dark-logo-favicon.png">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/TextPlugin.min.js"></script>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --cream: #f0ebe1;
+      --ink: #0d0d0d;
+      --accent: #38BDF8;
+      --gold: #c9a84c;
+      --muted: #7a7369;
+      --glass: rgba(240,235,225,0.06);
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: var(--ink);
+      color: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      overflow-x: hidden;
+      cursor: none;
+    }
+  /* ─── HEADER ─── */
+
+    /* ─── CUSTOM CURSOR ─── */
+    #cursor {
+      position: fixed; top: 0; left: 0; z-index: 9999;
+      pointer-events: none;
+    }
+    #cursor-dot {
+      width: 8px; height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      position: absolute;
+      transform: translate(-50%,-50%);
+      transition: width .2s, height .2s, background .2s;
+    }
+    #cursor-ring {
+      width: 36px; height: 36px;
+      border: 1.5px solid rgba(240,235,225,0.5);
+      border-radius: 50%;
+      position: absolute;
+      transform: translate(-50%,-50%);
+      transition: width .35s ease, height .35s ease, border-color .35s;
+    }
+    body.hovering #cursor-dot { width: 12px; height: 12px; background: var(--gold); }
+    body.hovering #cursor-ring { width: 56px; height: 56px; border-color: var(--gold); }
+
+    /* ─── VIDEO BG ─── */
+    #bg-video {
+      position: fixed; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; z-index: 0;
+      opacity: 0.25;
+      filter: grayscale(40%) contrast(1.1);
+    }
+
+    /* Grain overlay */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 1;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 0.35;
+      pointer-events: none;
+    }
+
+    /* ─── LAYOUT ─── */
+    #app { position: relative; z-index: 2; }
+
+    /* ─── HERO ─── */
+    #hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: flex-start;
+      padding: clamp(2rem, 6vw, 6rem);
+      position: relative;
+    }
+
+    .eyebrow {
+      font-family: 'Space Mono', monospace;
+      font-size: clamp(0.65rem, 1.2vw, 0.8rem);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 2rem;
+      opacity: 0;
+    }
+
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(5rem, 16vw, 18rem);
+      line-height: 0.88;
+      letter-spacing: -0.01em;
+      color: var(--cream);
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+    .hero-title span { display: block; }
+    .hero-title .accent-word { color: var(--accent); }
+
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.3rem);
+      color: var(--muted);
+      font-weight: 300;
+      max-width: 480px;
+      line-height: 1.7;
+      opacity: 0;
+      margin-bottom: 3rem;
+    }
+
+    /* ─── EMAIL FORM ─── */
+    .notify-wrap {
+      display: flex; gap: 0; opacity: 0;
+      border: 1px solid rgba(240,235,225,0.15);
+      overflow: hidden;
+      max-width: 460px; width: 100%;
+    }
+    .notify-input {
+      flex: 5;
+      background: transparent;
+      border: none; outline: none;
+      color: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      padding:j 
+      
+      
+      
+      
+      
+      
+      1rem 1.2rem;
+      cursor: none;
+    }
+    .notify-input::placeholder { color: var(--muted); }
+    .notify-btn {
+      background: var(--accent);
+      color: var(--cream);
+      border: none; outline: none;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 1rem 1.6rem;
+      cursor: none;
+      transition: background 0.3s;
+      white-space: nowrap;
+    }
+    .notify-btn:hover { background: #38BDF8; }
+
+    /* ─── FEATURES TICKER ─── */
+    .ticker-wrap {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      z-index: 10;
+      border-top: 1px solid rgba(240,235,225,0.08);
+      background: rgba(13,13,13,0.85);
+      backdrop-filter: blur(12px);
+      overflow: hidden;
+      padding: 0.9rem 0;
+      opacity: 0;
+    }
+    .ticker-track {
+      display: flex; gap: 0;
+      animation: ticker 22s linear infinite;
+      width: max-content;
+    }
+    .ticker-item {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.1rem;
+      letter-spacing: 0.12em;
+      padding: 0 2.5rem;
+      color: var(--muted);
+      white-space: nowrap;
+      transition: color 0.3s;
+    }
+    .ticker-item:hover { color: var(--cream); }
+    .ticker-item .dot { color: var(--accent); margin-right: 1.5rem; }
+
+    @keyframes ticker {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ─── FEATURES GRID ─── */
+    #features {
+      min-height: 100vh;
+      padding: clamp(4rem, 8vw, 8rem) clamp(2rem, 6vw, 6rem);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      align-items: start;
+    }
+    .features-header {
+      position: sticky; top: 10vh;
+      padding-right: 4rem;
+    }
+    .features-header h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3rem, 6vw, 6rem);
+      line-height: 0.9;
+      color: var(--cream);
+      margin-bottom: 1.5rem;
+    }
+    .features-header p {
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.8;
+      font-weight: 300;
+    }
+
+    .feature-list { display: flex; flex-direction: column; }
+    .feature-card {
+      border-top: 1px solid rgba(240,235,225,0.1);
+      padding: 2.5rem 0;
+      cursor: none;
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    .feature-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: var(--glass);
+      transform: translateX(-100%);
+      transition: transform 0.5s cubic-bezier(0.16,1,0.3,1);
+    }
+    .feature-card:hover::before { transform: translateX(0); }
+
+    .feature-num {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--accent);
+      letter-spacing: 0.2em;
+      margin-bottom: 1rem;
+      position: relative; z-index: 1;
+    }
+    .feature-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2rem, 3.5vw, 3rem);
+      letter-spacing: 0.04em;
+      color: var(--cream);
+      line-height: 1;
+      position: relative; z-index: 1;
+      transition: color 0.3s;
+    }
+    .feature-card:hover .feature-name { color: var(--gold); }
+    .feature-desc {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-top: 0.8rem;
+      font-weight: 300;
+      position: relative; z-index: 1;
+      max-width: 360px;
+    }
+    .feature-arrow {
+      position: absolute; right: 0; top: 50%;
+      transform: translateY(-50%) translateX(20px);
+      font-size: 1.5rem;
+      color: var(--gold);
+      opacity: 0;
+      transition: opacity 0.3s, transform 0.3s;
+    }
+    .feature-card:hover .feature-arrow { opacity: 1; transform: translateY(-50%) translateX(0); }
+
+    /* ─── CRAFTED BY ─── */
+    #crafted {
+      padding: clamp(4rem, 8vw, 8rem) clamp(2rem, 6vw, 6rem);
+      border-top: 1px solid rgba(240,235,225,0.08);
+      display: flex; flex-direction: column; align-items: center;
+      text-align: center;
+      padding-bottom: 6rem;
+    }
+    .crafted-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 2.5rem;
+      opacity: 0;
+    }
+    .crafted-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      letter-spacing: 0.05em;
+      color: var(--cream);
+      margin-bottom: 3rem;
+      opacity: 0;
+    }
+    .crafted-title em { color: var(--accent); font-style: normal; }
+
+    .team-grid {
+      display: flex; gap: clamp(2rem, 6vw, 5rem);
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .team-card {
+      opacity: 0;
+      transform: translateY(20px);
+      text-align: center;
+    }
+    .team-avatar {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      border: 1px solid rgba(240,235,225,0.15);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem;
+      color: var(--cream);
+      margin: 0 auto 1rem;
+      background: var(--glass);
+      backdrop-filter: blur(8px);
+      transition: border-color 0.3s, transform 0.4s;
+      cursor: none;
+      position: relative;
+      overflow: hidden;
+    }
+    .team-avatar::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 50% 50%, rgba(201,168,76,0.15), transparent 70%);
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+    .team-card:hover .team-avatar { border-color: var(--gold); transform: scale(1.08); }
+    .team-card:hover .team-avatar::after { opacity: 1; }
+
+    .team-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.4rem;
+      letter-spacing: 0.08em;
+      color: var(--cream);
+      margin-bottom: 0.3rem;
+    }
+    .team-link {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+      text-decoration: none;
+      text-transform: uppercase;
+      cursor: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s, color 0.3s;
+      display: inline-flex; align-items: center; gap: 0.4rem;
+    }
+    .team-link:hover { color: var(--gold); border-color: var(--gold); }
+
+    /* ─── MAGNETIC BUTTON ─── */
+    .mag-btn-wrap { position: relative; display: inline-block; }
+
+    /* ─── FLOATING ELEMENTS ─── */
+    .float-el {
+      position: fixed;
+      pointer-events: none; z-index: 1;
+      opacity: 0.04;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 10rem;
+      color: var(--cream);
+      white-space: nowrap;
+    }
+    .header {
+      position: absolute;   /* stays inside hero */
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      width: 100%;
+
+      display: flex;
+      justify-content: center; /* center horizontally */
+      align-items: center;
+
+      z-index: 5; /* above hero text */
+    }
+    .logo {
+      height: 90px;
+      width: auto;
+    }
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      #features { grid-template-columns: 1fr; }
+      .features-header { position: static; padding-right: 0; margin-bottom: 3rem; }
+      .team-grid { gap: 2rem; }
+    }
+  </style>
+  </head>
+  <body>
+
+  <!-- Custom Cursor -->
+  <div id="cursor">
+    <div id="cursor-dot"></div>
+    <div id="cursor-ring"></div>
+  </div>
+
+  <!-- Background Video -->
+  <video id="bg-video" autoplay muted loop playsinline>
+    <source src="9005-216332135_small.mp4" type="video/mp4">
+  </video>
+
+  <div id="app">
+
+    <!-- ─── HERO ─── -->
+    <section id="hero">
+      <header class="header">
+        <img src="Syntra-dark-2-1 - Copy (2).png" class="logo">
+      </header>
+      <p class="eyebrow" id="eyebrow">Something extraordinary is brewing</p>
+      <h1 class="hero-title" id="hero-title">
+        <span class="line1">STAY</span>
+        <span class="line2 accent-word">TUNED</span>
+      <span class="line3 accent-word">HERE</span>
+
+      </h1>
+
+      <p class="hero-sub" id="hero-sub">
+        A new kind of creative studio — where design meets intelligence.
+        AI, automation, branding, and visuals crafted for the bold.
+      </p>
+
+  
+
+      <!-- Notify -->
+      <div class="notify-wrap" id="notify-wrap">
+        <input class="notify-input" type="email" placeholder="Enter your email for early access">
+        <button class="notify-btn">Notify Me →</button>
+      </div>
+    </section>
+
+    <!-- ─── FEATURES ─── -->
+    <section id="features">
+      <div class="features-header">
+        <h2>WHAT<br>WE<br>DO</h2>
+        <p>Six pillars of a new creative OS — designed to transform how brands think, build, and grow.</p>
+      </div>
+      <div class="feature-list">
+        <div class="feature-card">
+          <p class="feature-num">01 / 06</p>
+          <h3 class="feature-name">Design</h3>
+          <p class="feature-desc">Interfaces and identities that aren't just beautiful — they're felt. Pixel-perfect, concept-driven, purposeful.</p>
+          <span class="feature-arrow">→</span>
+        </div>
+        <div class="feature-card">
+          <p class="feature-num">02 / 06</p>
+          <h3 class="feature-name">AI</h3>
+          <p class="feature-desc">Intelligence woven into every layer. Smarter decisions, faster ideation, and systems that learn.</p>
+          <span class="feature-arrow">→</span>
+        </div>
+        <div class="feature-card">
+          <p class="feature-num">03 / 06</p>
+          <h3 class="feature-name">Automation</h3>
+          <p class="feature-desc">Eliminate friction. Build pipelines that work while you sleep so your team focuses on what matters.</p>
+          <span class="feature-arrow">→</span>
+        </div>
+        <div class="feature-card">
+          <p class="feature-num">04 / 06</p>
+          <h3 class="feature-name">Branding</h3>
+          <p class="feature-desc">Strategy-first brand systems. Voice, identity, presence — everything cohesive from day one.</p>
+          <span class="feature-arrow">→</span>
+        </div>
+        <div class="feature-card">
+          <p class="feature-num">05 / 06</p>
+          <h3 class="feature-name">Workflows</h3>
+          <p class="feature-desc">Creative and operational processes engineered for speed. Structured chaos that actually ships.</p>
+          <span class="feature-arrow">→</span>
+        </div>
+        <div class="feature-card">
+          <p class="feature-num">06 / 06</p>
+          <h3 class="feature-name">Visuals</h3>
+          <p class="feature-desc">Motion, stills, and generative art. Content at the intersection of craft and computation.</p>
+          <span class="feature-arrow">→</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── CRAFTED BY ─── -->
+    <section id="crafted">
+      <p class="crafted-label" id="crafted-label">The minds behind it</p>
+      <h2 class="crafted-title" id="crafted-title">CRAFTED WITH <em>❤</em> BY</h2>
+      <div class="team-grid">
+        <div class="team-card" id="tc1">
+          <div class="team-avatar">S</div>
+          <p class="team-name">Sahil</p>
+          <a class="team-link" href="https://www.linkedin.com/in/sahildavkhar/" target="_blank">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+            LinkedIn
+          </a>
+        </div>
+        <div class="team-card" id="tc2">
+          <div class="team-avatar">S</div>
+          <p class="team-name">Sanchita</p>
+          <a class="team-link" href="https://www.linkedin.com/in/sanchita-varade-08675a285" target="_blank">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+            LinkedIn
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ─── TICKER ─── -->
+  <div class="ticker-wrap" id="ticker">
+    <div class="ticker-track">
+      <span class="ticker-item"><span class="dot">●</span>Design</span>
+      <span class="ticker-item"><span class="dot">●</span>AI</span>
+      <span class="ticker-item"><span class="dot">●</span>Automation</span>
+      <span class="ticker-item"><span class="dot">●</span>Branding</span>
+      <span class="ticker-item"><span class="dot">●</span>Workflows</span>
+      <span class="ticker-item"><span class="dot">●</span>Visuals</span>
+      <span class="ticker-item"><span class="dot">●</span>Design</span>
+      <span class="ticker-item"><span class="dot">●</span>AI</span>
+      <span class="ticker-item"><span class="dot">●</span>Automation</span>
+      <span class="ticker-item"><span class="dot">●</span>Branding</span>
+      <span class="ticker-item"><span class="dot">●</span>Workflows</span>
+      <span class="ticker-item"><span class="dot">●</span>Visuals</span>
+    </div>
+  </div>
+
+  <script>
+  gsap.registerPlugin(ScrollTrigger, TextPlugin);
+
+  /* ─── CURSOR ─── */
+  const dot = document.getElementById('cursor-dot');
+  const ring = document.getElementById('cursor-ring');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+
+  gsap.ticker.add(() => {
+    dot.style.left = mx + 'px'; dot.style.top = my + 'px';
+    rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+  });
+
+  document.querySelectorAll('a, button, .feature-card, .team-card, .team-avatar, .notify-btn').forEach(el => {
+    el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+    el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+  });
+
+  /* ─── HERO ENTRANCE ─── */
+  const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
+
+  tl.fromTo('.line1', { yPercent: 110 }, { yPercent: 0, duration: 1, delay: 0.3 })
+    .fromTo('.line2', { yPercent: 110 }, { yPercent: 0, duration: 1 }, '-=0.7')
+    .fromTo('.line3', { yPercent: 110 }, { yPercent: 0, duration: 1 }, '-=0.7')
+    .to('#eyebrow', { opacity: 1, y: 0, duration: 0.8, from: { y: 10 } }, '-=0.6')
+    .to('#hero-sub', { opacity: 1, y: 0, duration: 0.8, from: { y: 15 } }, '-=0.5')
+    .to('#notify-wrap', { opacity: 1, y: 0, duration: 0.8 }, '-=0.4')
+    .to('#ticker', { opacity: 1, duration: 0.6 }, '-=0.3');
+
+
+  /* ─── FEATURE CARDS SCROLL ─── */
+  gsap.utils.toArray('.feature-card').forEach((card, i) => {
+    gsap.to(card, {
+      opacity: 1, y: 0, duration: 0.8,
+      ease: 'power3.out',
+      scrollTrigger: {
+        trigger: card, start: 'top 85%', toggleActions: 'play none none reverse'
+      },
+      delay: i * 0.06
+    });
+  });
+
+  /* ─── CRAFTED BY ─── */
+  gsap.to('#crafted-label', {
+    opacity: 1, scrollTrigger: { trigger: '#crafted', start: 'top 80%' }, duration: 0.6
+  });
+  gsap.to('#crafted-title', {
+    opacity: 1, scrollTrigger: { trigger: '#crafted', start: 'top 75%' }, duration: 0.7, delay: 0.15
+  });
+  ['#tc1','#tc2'].forEach((id, i) => {
+    gsap.to(id, {
+      opacity: 1, y: 0, duration: 0.7, ease: 'power3.out',
+      scrollTrigger: { trigger: '#crafted', start: 'top 70%' },
+      delay: 0.3 + i * 0.15
+    });
+  });
+
+  /* ─── MAGNETIC BUTTONS ─── */
+  document.querySelectorAll('.notify-btn, .team-avatar').forEach(btn => {
+    btn.addEventListener('mousemove', e => {
+      const rect = btn.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const dx = (e.clientX - cx) * 0.3;
+      const dy = (e.clientY - cy) * 0.3;
+      gsap.to(btn, { x: dx, y: dy, duration: 0.4, ease: 'power2.out' });
+    });
+    btn.addEventListener('mouseleave', () => {
+      gsap.to(btn, { x: 0, y: 0, duration: 0.6, ease: 'elastic.out(1,0.5)' });
+    });
+  });
+
+  /* ─── FEATURE CARD HOVER TILT ─── */
+  document.querySelectorAll('.feature-card').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const rect = card.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+      gsap.to(card, { rotateY: x * 6, rotateX: -y * 4, duration: 0.4, ease: 'power2.out', transformPerspective: 600 });
+    });
+    card.addEventListener('mouseleave', () => {
+      gsap.to(card, { rotateY: 0, rotateX: 0, duration: 0.7, ease: 'elastic.out(1,0.6)' });
+    });
+  });
+
+  /* ─── TITLE HOVER SPLIT ─── */
+  document.querySelectorAll('.hero-title span').forEach(span => {
+    span.addEventListener('mouseenter', () => {
+      gsap.to(span, { skewX: -4, x: 6, duration: 0.3, ease: 'power2.out' });
+    });
+    span.addEventListener('mouseleave', () => {
+      gsap.to(span, { skewX: 0, x: 0, duration: 0.5, ease: 'elastic.out(1,0.5)' });
+    });
+  });
+
+  /* ─── COUNTDOWN ─── */
+
+  /* ─── NOTIFY BUTTON ─── */
+  document.querySelector('.notify-btn').addEventListener('click', () => {
+    const input = document.querySelector('.notify-input');
+    if (input.value) {
+      gsap.to('.notify-wrap', { scale: 0.97, duration: 0.1, yoyo: true, repeat: 1 });
+      document.querySelector('.notify-btn').textContent = 'You\'re in ✓';
+      document.querySelector('.notify-btn').style.background = '#1a7a4a';
+      input.value = '';
+      input.placeholder = 'We\'ll be in touch!';
+    }
+  });
+
+  /* ─── SCROLL PARALLAX ─── */
+  gsap.to('#bg-video', {
+    yPercent: 150,
+    ease: 'none',
+    scrollTrigger: { trigger: 'body', start: 'top top', end: 'bottom top', scrub: true }
+  });
+  </script>
+  </body>
+  </html>
